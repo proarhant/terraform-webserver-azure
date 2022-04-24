@@ -1,0 +1,32 @@
+#!/bin/sh
+sudo mkdir -p /opt/applications/{hello-world,logs}
+ROOT_FILE="/opt/applications/hello-world/index.html"
+sudo cat <<EOF >$ROOT_FILE
+<!doctype html><html lang=en class=no-js><headclass="live-site">
+<head><title>Hello World On Azure Using Terraform!</title>
+<meta charset=UTF-8" />
+</head>
+<body>
+Hello World!
+</body>
+</html>
+EOF
+
+REPO="/etc/yum.repos.d/nginx.repo"
+sudo cat <<EOF >$REPO
+[nginx]
+name=nginx repo
+baseurl=http://nginx.org/packages/mainline/rhel/7/\$basearch/
+gpgcheck=0
+enabled=1
+EOF
+
+sudo yum -y install nginx
+sudo systemctl start nginx
+sudo systemctl enable nginx
+sudo systemctl status nginx
+
+sudo mv /usr/share/nginx/html/index.html /usr/share/nginx/html/index.orig
+sudo cp $ROOT_FILE /usr/share/nginx/html/index.html
+
+sudo echo "hello-world app is servining..." > /opt/applications/logs/hello-world.log
