@@ -46,11 +46,11 @@ def health_check(argv):
     except (HTTPError, URLError) as error:
         logging.error('HTTP response not received because %s for URL: %s', error, url)  
         if str(error) == WEB_NGINX_DOWN:
-            logging.error('Webserver NGINX is DOWN. E.g. Nginx process died.')
+            logging.error('Nginx process is not running.')
         elif str(error) == WEB_HOST_DOWN:
             logging.error('Webserver host is currently NOT Reachable. E.g. Host is down.')
         elif str(error) == WEB_NGINX_FORBIDDEN:
-            logging.error('Webserver NGINX is currently NOT Accessible. E.g. index.html is missing.')
+            logging.error('NGINX is currently NOT serving. E.g. index.html is missing.')
     except Exception as e:
         logger.error("Webserver health check failure %s " %(str(e)))
     return False
