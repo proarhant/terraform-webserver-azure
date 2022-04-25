@@ -47,18 +47,22 @@ curl `terraform output -raw public_ip`
 # Deploy the Python Health Check script to monitor webserver status
 
 The health check script named `healthcheck.py` takes two arguments: `public ip of the webserver` and `health check interval`.
-
+```
+PUB_IP=`terraform output -raw public_ip`
+HEALTH_CHECK_PERIOD=5
+python ./health-check-scripts/healthcheck.py $PUB_IP $HEALTH_CHECK_PERIOD
+```
 Optionally, the script can also be installed as a `crontab` job on `Linux` or `Task Scheduler` job on `Windows` to run periodically.
 
 Please ensure that only one instance of the script runs at any given time.
 
 The checks are done on the health conditions including following:
-1. Nginx process is down e.g. Host is up but HTTP response is not retrieved.
-2. Host server is down e.g. not reachable.
-3. Nginx is not serving. E.g. index.html is missing, or not readable.
+1. `Nginx process is down` e.g. Host is up but HTTP response is not retrieved.
+2. `Host server is down` e.g. not reachable.
+3. `Nginx is not serving` e.g. index.html is missing, or not readable.
 https://github.com/proarhant/terraform-webserver-azure/blob/9166f572c3974d35e84ba3b77db0741c2859c848/health-check-scripts/healthcheck.py#L36-L53
 
-In this example, the script checks the health condition of the server every 5 seconds.
+In this example, the script checks the health condition of the server `every 5 seconds`.
 ```
 # Periodically check the health of the webserver every 5 seconds
 HEALTH_CHECK_PERIOD=5
@@ -71,12 +75,12 @@ We can monitor the contents of the health check script's log file named `healthc
 
 ![image](https://user-images.githubusercontent.com/2681229/165104483-31c27b9a-9324-4e6f-8789-54f9a5b95902.png)
 
-We will destroy all remote objects managed by our demo Terraform configuration
+Once we complete the `demo`, we will destroy all remote objects managed by our `Terraform` configuration:
 ```
 terraform destroy
 ```
 # Build and Deploy using WebserverDeployAndHealthcheck.sh
-The bash script named `WebserverDeployAndHealthcheck.sh` can be used to aumoate the steps executed above:
+The bash script named `WebserverDeployAndHealthcheck.sh` can be used to aumoate the steps manually executed above:
 ```
 chmod +x WebserverDeployAndHealthcheck.sh 
 ./WebserverDeployAndHealthcheck.sh
@@ -84,8 +88,11 @@ chmod +x WebserverDeployAndHealthcheck.sh
 
 The scrit will execute the following steps:
 
-1. Deploy the `Hello World` webserver on CentOS.
+1. Deploy the `Hello World` webserver on CentOS with `Terraform`.
 2. Configure the `Python` health check script to run periodically `every 5 seconds`.
 3. Monitor the health condition with `tail -f healthcheck_webapp.log`.
 
-
+Once we complete the `demo`, all remote objects managed by our `Terraform` configuration will be deleted:
+```
+terraform destroy
+```
