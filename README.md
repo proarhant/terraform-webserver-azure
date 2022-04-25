@@ -6,7 +6,7 @@ Sample webserver deployment on `Azure` with `Terraform` with a `Python` health c
 Please run the following commands on `Linux` enviromnent to test the deployment of a sample Hello World webserver.
 
 ```
-# This demo has been excuted on Terraform v1.1.8 and Python 3.7.3 on Linux (Azure Cloud Shell)
+# This demo has been executed and tested on Terraform v1.1.8 and Python 3.7.3 on Linux (Azure Cloud Shell)
 terraform -version
 python --version
 
