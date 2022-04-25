@@ -1,5 +1,12 @@
 # terraform-webserver-azure
-Sample webserver deployment on `Azure` with `Terraform` with a `Python` health check script.
+The deployment of a sample webserver on `Azure` with `Terraform` which is monitored with a health check script coded in `Python`.
+
+The code in this repository serves following two puposes:
+
+1. `Terrafor` code will deploy a `Hello World` webserver on `CentOS` with `Terraform`. The `Nginx` webserver will respond with `Hello World!` when the website is called via command-line (e.g. `curl`) or browser.
+2. `Python` code will run periodically e.g. `every 5 seconds` to check health of the webserver. The health check process will return `SUCCESS` if the website's `index.html` page contains `Hello World!` text.
+
+The code runs on both `Linux` and `Windwos`. The demo has been executed and tested on `Terraform v1.1.8` and `Python 3.7.3` on `Linux` (Azure Cloud Shell).
 
 # Deploy the Nginx webserver on CentOS using Terraform
 
@@ -47,6 +54,8 @@ Enter `yes` to accept the provisioning to be carried out by `Terraform`. In our 
 The deployment will show the `Public IP` of the deployed server. This IP info is valuable for us to use in the automation and test scripts.
 
 ![image](https://user-images.githubusercontent.com/2681229/165101479-79669c9d-c984-4495-a4b3-c3789d21238b.png)
+
+In this example, I am using `curl` command to hit the website's `public ip`. Please note that the `Python` script will take any ip associated with the webserver.
 ```
 # Confirm that the webserver is serving the Hello World! page.
 curl `terraform output -raw public_ip`
@@ -56,14 +65,18 @@ curl `terraform output -raw public_ip`
 
 # Deploy the Python Health Check script to monitor webserver status
 
-The health check script named `healthcheck.py` takes two arguments: `public ip of the webserver` and `health check interval`.
+The health check script named `healthcheck.py` stored in `health-check-scripts` direcrory takes two arguments: `ip of the webserver` and `health check interval`. The script is developed in `Python 3.7.3` version. 
+
+Please note that the `Python` script will take any ip (public or private) associated with the webserver. The value for the`health check interval` period is given in `seconds`.
+
+In this demo, I am using `public ip` to hit the website and script checks the health in `every 5 seconds`.
 ```
 PUB_IP=`terraform output -raw public_ip`
 HEALTH_CHECK_PERIOD=5
 python ./health-check-scripts/healthcheck.py $PUB_IP $HEALTH_CHECK_PERIOD
 ```
 
-The health check process will return `SUCCESS` if the `index.html` page contains the `Hello World!` text.
+The health check process will return `SUCCESS` if the website's `index.html` page contains `Hello World!` text.
 https://github.com/proarhant/terraform-webserver-azure/blob/cd9df9339a2e208f0526be7103878ccbea1167a4/health-check-scripts/healthcheck.py#L36-L40
 
 The error checks are done on the health conditions including following:
@@ -72,7 +85,7 @@ The error checks are done on the health conditions including following:
 3. `Nginx is not serving` e.g. index.html is missing, or not readable.
 https://github.com/proarhant/terraform-webserver-azure/blob/9166f572c3974d35e84ba3b77db0741c2859c848/health-check-scripts/healthcheck.py#L36-L53
 
-In this example, the script checks the health condition of the server `every 5 seconds`.
+In this example, the script checks the health condition of the server `every 5 seconds`. The first argument is the `public ip` of the website.
 ```
 # Periodically check the health of the webserver every 5 seconds
 HEALTH_CHECK_PERIOD=5
@@ -94,10 +107,13 @@ terraform destroy
 # Build and Deploy using WebserverDeployAndHealthcheck.sh
 The bash script named `WebserverDeployAndHealthcheck.sh` can be used to aumoate the steps manually executed above:
 ```
+# Download the code from GitHub repo
+git clone https://github.com/proarhant/terraform-webserver-azure.git && cd terraform-webserver-azure
+# Make the script executable and run
 chmod +x WebserverDeployAndHealthcheck.sh 
 ./WebserverDeployAndHealthcheck.sh
 ```
-
+![image](https://user-images.githubusercontent.com/2681229/165186215-36251a9f-e355-431c-8dca-61231e80bccd.png)
 The scrit will execute the following steps:
 
 1. Deploy the `Hello World` webserver on CentOS with `Terraform`.
