@@ -15,6 +15,9 @@ logger.addHandler(file_handler)
 WEB_PROTOCOL = "HTTP"
 #WEBAPP_ENDPOINT = "127.0.0.1"
 #PERIOD = 5
+WEB_NGINX_DOWN = "<urlopen error [Errno 111] Connection refused>"
+WEB_HOST_DOWN = "<urlopen error timed out>"
+WEB_NGINX_FORBIDDEN = "HTTP Error 403: Forbidden"
 
 #Health check displays SUCCESS if the webapp URL returns Hello World!.
 def health_check(argv):
@@ -22,7 +25,7 @@ def health_check(argv):
         host_ip = argv[1]
         url = WEB_PROTOCOL+"://" + host_ip
         logger.info("Health check webapp at %s", url)
-        
+
         response=urllib.request.urlopen(url, timeout=7)
         if response:
             if response.getcode()==200:
@@ -41,7 +44,13 @@ def health_check(argv):
             else:
                 logger.info("Webserver is NOT healthy. Returns HTTP code: " + str(response.getcode()))
     except (HTTPError, URLError) as error:
-        logging.error('Data not retrieved because %s for URL: %s', error, url)  
+        logging.error('HTTP response not received because %s for URL: %s', error, url)  
+        if str(error) == WEB_NGINX_DOWN:
+            logging.error('Webserver NGINX is DOWN. E.g. Nginx process died.')
+        elif str(error) == WEB_HOST_DOWN:
+            logging.error('Webserver host is currently NOT Reachable. E.g. Host is down.')
+        elif str(error) == WEB_NGINX_FORBIDDEN:
+            logging.error('Webserver NGINX is currently NOT Accessible. E.g. index.html is missing.')
     except Exception as e:
         logger.error("Webserver health check failure %s " %(str(e)))
     return False
