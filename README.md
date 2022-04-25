@@ -67,9 +67,25 @@ nohup python ./health-check-scripts/healthcheck.py `terraform output -raw public
 # Start monitoring the webapp
 tail -f healthcheck_webapp.log
 ```
+We can monitor the contents of the health check script's log file named `healthcheck_webapp.log` using `tail -f healthcheck_webapp.log`.
+
 ![image](https://user-images.githubusercontent.com/2681229/165104483-31c27b9a-9324-4e6f-8789-54f9a5b95902.png)
 
 We will destroy all remote objects managed by our demo Terraform configuration
 ```
 terraform destroy
 ```
+# Build and Deploy using WebserverDeployAndHealthcheck.sh
+The bash script named `WebserverDeployAndHealthcheck.sh` can be used to aumoate the steps executed above:
+```
+chmod +x WebserverDeployAndHealthcheck.sh 
+./WebserverDeployAndHealthcheck.sh
+```
+
+The scrit will execute the following steps:
+
+1. Deploy the `Hello World` webserver on CentOS.
+2. Configure the `Python` health check script to run periodically `every 5 seconds`.
+3. Monitor the health condition with `tail -f healthcheck_webapp.log`.
+
+
