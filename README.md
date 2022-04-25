@@ -17,13 +17,23 @@ git clone https://github.com/proarhant/terraform-webserver-azure.git && cd terra
 ssh-keygen -P "" -t rsa -C "This SSH kay pair is for demo purpose only" -f ./id_rsa_tfadmin
 ```
 ![image](https://user-images.githubusercontent.com/2681229/165100334-2997933e-0017-4a99-9bbb-791f1e920b3e.png)
+
+The `Terraform` code in this demo accomplishes following objectives:
+
+1. First, provision the `CentOS` VM on `Auzre`
+2. Then, deploy the sample `Hello World` webpage on `Nginx` webserver using the `custom data`.
+
+In this`Terraform` code, the `custom_data` in `azurerm_virtual_machine` specifies the custom data to supply to the CentOS VM to install the `Nginx` software and then create the sample `Hello World!` webpage.
+
+https://github.com/proarhant/terraform-webserver-azure/blob/cd9df9339a2e208f0526be7103878ccbea1167a4/main.tf#L105
+https://github.com/proarhant/terraform-webserver-azure/blob/cd9df9339a2e208f0526be7103878ccbea1167a4/variables.tf#L60-L61
+https://github.com/proarhant/terraform-webserver-azure/blob/cd9df9339a2e208f0526be7103878ccbea1167a4/cloud-init-scripts/centos_user_data.txt#L4-L12
+
+The following `Terraform` commands will be executed to build the sample web server:
 ```
-# Now, lets deploy the webserver with Terraform
 terraform init
 terraform apply
 terraform refresh
-# Confirm that the webserver is serving the Hello World! page.
-curl `terraform output -raw public_ip`
 ```
 After the completion of `terraform apply`, please make sure to run `terraform refresh` to deal with the issue detailed here: https://github.com/hashicorp/terraform-provider-azurerm/issues/159. 
 
@@ -52,11 +62,11 @@ PUB_IP=`terraform output -raw public_ip`
 HEALTH_CHECK_PERIOD=5
 python ./health-check-scripts/healthcheck.py $PUB_IP $HEALTH_CHECK_PERIOD
 ```
-Optionally, the script can also be installed as a `crontab` job on `Linux` or `Task Scheduler` job on `Windows` to run periodically.
 
-Please ensure that only one instance of the script runs at any given time.
+The health check process will return `SUCCESS` if the `index.html` page contains the `Hello World!` text.
+https://github.com/proarhant/terraform-webserver-azure/blob/cd9df9339a2e208f0526be7103878ccbea1167a4/health-check-scripts/healthcheck.py#L36-L40
 
-The checks are done on the health conditions including following:
+The error checks are done on the health conditions including following:
 1. `Nginx process is down` e.g. Host is up but HTTP response is not retrieved.
 2. `Host server is down` e.g. not reachable.
 3. `Nginx is not serving` e.g. index.html is missing, or not readable.
@@ -75,6 +85,8 @@ We can monitor the contents of the health check script's log file named `healthc
 
 ![image](https://user-images.githubusercontent.com/2681229/165104483-31c27b9a-9324-4e6f-8789-54f9a5b95902.png)
 
+Please ensure that only one instance of the script runs at any given time. Optionally, the script can also be installed as a `crontab` job on `Linux` or `Task Scheduler` job on `Windows` to run periodically.
+
 Once we complete the `demo`, we will destroy all remote objects managed by our `Terraform` configuration:
 ```
 terraform destroy
@@ -90,7 +102,7 @@ The scrit will execute the following steps:
 
 1. Deploy the `Hello World` webserver on CentOS with `Terraform`.
 2. Configure the `Python` health check script to run periodically `every 5 seconds`.
-3. Monitor the health condition with `tail -f healthcheck_webapp.log`.
+3. Monitor the health condition using`tail -f healthcheck_webapp.log`.
 
 Once we complete the `demo`, all remote objects managed by our `Terraform` configuration will be deleted:
 ```
