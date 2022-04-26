@@ -3,7 +3,7 @@ The deployment of a sample webserver on `Azure` with `Terraform` which is monito
 
 The code in this repository serves following two puposes:
 
-1. `Terrafor` code will deploy a `Hello World` webserver on `CentOS` with `Terraform`. The `Nginx` webserver will respond with `Hello World!` when the website is called via command-line (e.g. `curl`) or browser.
+1. `Terraform` code will deploy a `Hello World` webserver on a `CentOS` VM hosted on `Azure`. The `Nginx` webserver will respond with `Hello World!` when the website is called via command-line (e.g. `curl`) or browser.
 2. `Python` code will run periodically e.g. `every 5 seconds` to check health of the webserver. The health check process will return `SUCCESS` if the website's `index.html` page contains `Hello World!` text.
 
 The code runs on both `Linux` and `Windwos`. The demo has been executed and tested on `Terraform v1.1.8` and `Python 3.7.3` on `Linux` (Azure Cloud Shell).
