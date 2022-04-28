@@ -134,3 +134,5 @@ To build and deploy this demo project using the `Terraform` module version of th
 
 ![image](https://user-images.githubusercontent.com/2681229/165856746-bd0140c1-3673-4e29-8153-4b650961e142.png)
 
+#Module Usage
+https://github.com/proarhant/terraform-webserver-azure/blob/9c554dd1318004fc3993f89c0b7b77c619378e10/tf-web-azure-module/main.tf#L3
