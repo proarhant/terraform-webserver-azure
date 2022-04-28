@@ -5,6 +5,8 @@ import urllib.request
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
+# Configure logs to roll over at midnight everyday
+# Log entries contain timestamp, log level (e.g INFO, ERROR) and message
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 file_handler = TimedRotatingFileHandler("healthcheck_webapp.log", when="midnight", interval=1)
@@ -12,6 +14,7 @@ file_handler.suffix = "%Y%m%d"
 file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 logger.addHandler(file_handler)
 
+# In the production, we will use HTTPS.
 WEB_PROTOCOL = "HTTP"
 #WEBAPP_ENDPOINT = "127.0.0.1"
 #PERIOD = 5
@@ -29,17 +32,21 @@ def health_check(argv):
         response=urllib.request.urlopen(url, timeout=7)
         if response:
             if response.getcode()==200:
+                # HTTP status 200 indicates we have the Nginx server is serving. 
                 lines = response.readlines()
                 logger.info("Webserver is UP and returns HTTP code: " + str(response.getcode()))
                 if lines is not None:
                     #logger.info("Debugging contents: "+str(lines[0].decode('utf-8')).rstrip())
                     for line in lines:
+                        # SUCCESS if the index.html contains the "Hello World!" text. Otherwise, the Nginx server is still being provisioned...
                         if 'Hello World!' in str(line):
                             logger.info("Webapp index file content is: " + str(line.decode('utf-8')).rstrip())
                             logger.info("Hello World app health check SUCCESS.")
                             return True
+                    # Nginx server is being provisioned. index.html is not ready yet.
                     logger.info("Hello World app is being deployed...")
                 else:
+                     # Nginx server is being provisioned. index.html is not ready yet with the content "Hello World!"
                     logger.info("Hello World app is being deployed...")
             else:
                 logger.info("Webserver is NOT healthy. Returns HTTP code: " + str(response.getcode()))
