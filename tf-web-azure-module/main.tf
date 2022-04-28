@@ -1,5 +1,4 @@
-# The Terraform module takes the following configurations to build CentOS VM.
-# user_data contains the script to build the "Hello World!" web app on Nginx webserver.
+# The Terraform module takes the following configurations to build CentOS VM. The user_data contains the script to build the "Hello World!" web app on Nginx webserver.
 
 module "vm" {
   source   = "./modules/vm/"
