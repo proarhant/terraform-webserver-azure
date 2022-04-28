@@ -2,11 +2,12 @@
 The deployment of a sample webserver on `Azure` with `Terraform` which is monitored with a health check script coded in `Python`.
 
 The code in this repository serves following two puposes:
-
 1. `Terraform` code will deploy a `Hello World` webserver on a `CentOS` VM hosted on `Azure`. The `Nginx` webserver deployed on the VM  will respond with `Hello World!` when the website is called e.g. command-line tools such as `curl` or browser.
 2. `Python` code will run periodically e.g. `every 5 seconds` to check health of the webserver. The health check process will return `SUCCESS` if the website's `index.html` page contains `Hello World!` text.
 
 The demo has been executed and tested on `Azure Cloud Shell` configured with `Terraform v1.1.8` and `Python 3.7.3`.
+
+The `module version` of the `Terraform` code is placed under `tf-web-azure-module` directory. For information on the usage of the module, please see below at the end of this document.
 
 # Deploy the Nginx webserver on CentOS using Terraform
 
@@ -77,13 +78,13 @@ python ./health-check-scripts/healthcheck.py $PUB_IP $HEALTH_CHECK_PERIOD
 ```
 
 The health check process will return `SUCCESS` if the website's `index.html` page contains `Hello World!` text.
-https://github.com/proarhant/terraform-webserver-azure/blob/cd9df9339a2e208f0526be7103878ccbea1167a4/health-check-scripts/healthcheck.py#L36-L40
+https://github.com/proarhant/terraform-webserver-azure/blob/a63d62b4a00152c3bdfbbd4cfe5d2312a89a44b1/tf-web-azure-module/health-check-scripts/healthcheck.py#L41-L45
 
 The error checks are done on the health conditions including following:
 1. `Nginx process is down` e.g. Host is up but HTTP response is not retrieved.
 2. `Host server is down` e.g. not reachable.
 3. `Nginx is not serving` e.g. index.html is missing, or not readable.
-https://github.com/proarhant/terraform-webserver-azure/blob/9166f572c3974d35e84ba3b77db0741c2859c848/health-check-scripts/healthcheck.py#L36-L53
+https://github.com/proarhant/terraform-webserver-azure/blob/a63d62b4a00152c3bdfbbd4cfe5d2312a89a44b1/tf-web-azure-module/health-check-scripts/healthcheck.py#L53-L60
 
 In this example, the script checks the health condition of the server `every 5 seconds`. The first argument is the `public ip` of the website.
 ```
@@ -124,3 +125,12 @@ Once we complete the `demo`, all remote objects managed by our `Terraform` confi
 ```
 terraform destroy
 ```
+
+# Deploying the Webserver using Terraform module version of the code
+
+The `Terraform` code with reusable `module` is placed under `tf-web-azure-module` directory.
+
+To build and deploy this demo project using the `Terraform` module version of the code, we will carry out the steps exactly same way we have done above, but for this instance the commands will be executed within the `tf-web-azure-module` directory.
+
+![image](https://user-images.githubusercontent.com/2681229/165856746-bd0140c1-3673-4e29-8153-4b650961e142.png)
+
